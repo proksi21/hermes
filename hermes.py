@@ -25,53 +25,50 @@ class Hermes(LineReceiver):
     def handle_COMMAND(self, command):
         data = command.decode().split()
         if data[0] != password:
-            self.sendLine('Wrong password'.encode())
+            self.sendLine((identity + ': ' + 'Wrong password').encode())
         else:
             data.remove(data[0])
             if data[0] == 'buy':
-                self.sendLine('Buying {}'.format(data[1]).encode())
+                self.sendLine((identity + ': ' + 'Buying {}'.format(data[1])).encode())
                 check = bot.buy_limit('BTC-{}'.format(data[1]), str(float(bet)/float(data[2])), data[2])
                 if check['success']:
-                    self.sendLine('success'.encode())
+                    self.sendLine((identity + ': ' + 'success').encode())
                 else:
-                    self.sendLine(check['message'].encode())
+                    self.sendLine((identity + ': ' + check['message']).encode())
                     
             elif data[0] == 'sell':
-                self.sendLine('Selling {}'.format(data[1]).encode())
+                self.sendLine((identity + ': ' + 'Selling {}'.format(data[1])).encode())
                 balance = bot.get_balance(data[1])
                 if balance['success']:
                     amount = balance['result']['Available']
                     check = bot.sell_limit('BTC-{}'.format(data[1]), amount, data[2])
                     if check['success']:
-                        self.sendLine('success'.encode())
+                        self.sendLine((identity + ': ' + 'success').encode())
                     else:
-                        self.sendLine(check['message'].encode())
+                        self.sendLine((identity + ': ' + check['message']).encode())
                 else:
-                    self.sendLine(balance['message'].encode())
+                    self.sendLine((identity + ': ' + balance['message']).encode())
                     
             elif data[0] == 'cancel':
-                self.sendLine('Cancelling orders'.encode())
+                self.sendLine((identity + ': ' + 'Cancelling orders').encode())
                 orders = bot.get_open_orders()
                 if orders['success']:
                     for order in orders['result']:
                         check = bot.cancel(order['OrderUuid'])
                         if not check['success']:
-                            self.sendLine(check['message'].encode())
+                            self.sendLine((identity + ': ' + check['message']).encode())
                             break
                     else:
-                        self.sendLine('success'.encode())
+                        self.sendLine((identity + ': ' + 'success').encode())
                 else:
-                    self.sendLine(orders['message'].encode())
+                    self.sendLine((identity + ': ' + orders['message']).encode())
 
             elif data[0] == 'ping':
-                self.sendLine('success'.encode())
+                self.sendLine((identity + ': ' + 'success').encode())
 
             else:
-                self.sendLine('Unknown command'.encode())
+                self.sendLine((identity + ': ' + 'Unknown command').encode())
             
-        #command = "Your command is: ".encode() + command
-        #self.sendLine(command)
-
 class HermesFactory(Factory):
 
     def buildProtocol(self, addr):
