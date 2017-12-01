@@ -1,5 +1,4 @@
-#Hermes trading bot
-#Version 0.4 beta
+#HermesBot client v0.4.1
 
 from twisted.internet.protocol import Factory
 from twisted.protocols.basic import LineReceiver
@@ -24,6 +23,8 @@ class Hermes(LineReceiver):
 
     def handle_COMMAND(self, command):
         data = command.decode().split()
+        if not data:
+            return
         if data[0] != password:
             self.sendLine((identity + ': ' + 'Wrong password').encode())
         else:
